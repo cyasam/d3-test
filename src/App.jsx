@@ -39,20 +39,24 @@ function App() {
 
   return (
     <div className="charts">
-      <VerticalBarChart
-        axisXPosition="both"
-        axisYPosition="both"
-        labels={dataset.labels}
-        dataset={dataset.data}
-        marginX={50}
-      />
-      <HorizontalBarChart
-        axisXPosition="both"
-        axisYPosition="both"
-        labels={dataset.labels}
-        dataset={dataset.data}
-        marginX={50}
-      />
+      <div className="vertical chart-container">
+        <VerticalBarChart
+          axisXPosition="both"
+          axisYPosition="both"
+          labels={dataset.labels}
+          dataset={dataset.data}
+          marginX={50}
+        />
+      </div>
+      <div className="horizontal chart-container">
+        <HorizontalBarChart
+          axisXPosition="both"
+          axisYPosition="both"
+          labels={dataset.labels}
+          dataset={dataset.data}
+          marginX={50}
+        />
+      </div>
     </div>
   );
 }
