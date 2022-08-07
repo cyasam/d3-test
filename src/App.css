@@ -1,5 +1,9 @@
 .charts {
   display: flex;
   justify-content: space-between;
-  flex-wrap: wrap;
+}
+
+.charts .chart {
+  width: 100%;
+  height: 400px;
 }

@@ -3,12 +3,12 @@ import * as d3 from 'd3';
 import { ChartContext } from './Chart';
 
 const renderAxisYLeft = ({ g, marginX }) => {
-  const gLeft = g.append('g').classed('left', true);
+  const gLeft = d3.select('g.group .left');
   return gLeft.attr('transform', `translate(${marginX}, 0)`);
 };
 
 const renderAxisYRight = ({ g, chartWidth, marginX }) => {
-  const gRight = g.append('g').classed('right', true);
+  const gRight = d3.select('g.group .right');
   return gRight.attr('transform', `translate(${chartWidth - marginX}, 0)`);
 };
 
@@ -30,7 +30,12 @@ function YAxis({ axisYPosition }) {
     }
   }, [chartWidth, chartHeight, yScale]);
 
-  return <g className="group y-axis" />;
+  return (
+    <g className="group y-axis">
+      <g className="left"></g>
+      <g className="right"></g>
+    </g>
+  );
 }
 
 export default YAxis;

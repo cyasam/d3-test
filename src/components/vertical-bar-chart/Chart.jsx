@@ -1,8 +1,6 @@
-import { createContext, useEffect, useRef, useState } from 'react';
+import { createContext, useEffect, useMemo, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import { randomColor } from '../../utils';
-
-const g = (svgSelection) => svgSelection.append('g').attr('class', 'group');
+import { useMeasure } from 'react-use';
 
 const initChart = ({ dataset, labels }) => {
   const calcXDomain = () => {
@@ -13,7 +11,7 @@ const initChart = ({ dataset, labels }) => {
     return [
       0,
       d3.max(dataset, function (d) {
-        return d;
+        return d.value;
       }),
     ];
   };
@@ -24,7 +22,8 @@ const initChart = ({ dataset, labels }) => {
       .map((value, i) => {
         return {
           label: labels[i],
-          value: dataset[i],
+          value: dataset[i].value,
+          color: dataset[i].color,
         };
       });
   };
@@ -39,78 +38,61 @@ const initChart = ({ dataset, labels }) => {
 export const ChartContext = createContext();
 
 const Chart = ({ labels, dataset, marginX, marginY, children }) => {
-  const [chartWidth, setChartWidth] = useState();
-  const [chartHeight, setChartHeight] = useState();
-
+  const [chartWrapperRef, { width, height }] = useMeasure();
   const { domainX, domainY, chartData } = initChart({ labels, dataset });
-  const mountedRef = useRef();
 
   const svgRef = useRef();
-  const xScaleRef = useRef();
-  const yScaleRef = useRef();
 
-  useEffect(() => {
-    if (mountedRef.current) return;
-
-    const svg = svgRef.current;
-    const svgWidth = svg.clientWidth;
-    const svgHeight = svg.clientHeight;
-
-    setChartWidth(svgWidth);
-    setChartHeight(svgHeight);
-
-    xScaleRef.current = d3
+  const { xScale, yScale } = useMemo(() => {
+    const xScale = d3
       .scaleBand()
-      .range([marginX, svgWidth - marginX])
+      .range([marginX, width - marginX])
       .paddingInner(0.2)
       .paddingOuter(0.3)
       .domain(domainX);
 
-    yScaleRef.current = d3
+    const yScale = d3
       .scaleLinear()
-      .range([svgHeight - marginY, marginY + 20, marginY])
+      .range([height - marginY, marginY + 20, marginY])
       .domain(domainY);
 
-    mountedRef.current = true;
-  }, []);
+    return {
+      xScale,
+      yScale,
+    };
+  }, [width, height, marginX, marginY, domainX, domainY]);
 
   useEffect(() => {
-    if (!chartWidth || !chartHeight) return;
+    if (!svgRef.current || height === 0) return;
 
-    const svg = svgRef.current;
-    const svgSelection = d3.select(svg);
-
-    const xScale = xScaleRef.current;
-    const yScale = yScaleRef.current;
-
-    const rects = svgSelection
-      .selectAll('rect')
+    const bars = d3
+      .select(svgRef.current)
+      .selectAll('.bar')
       .data(chartData)
-      .enter()
-      .append('rect')
-      .classed('bar', true)
       .attr('width', xScale.bandwidth())
-      .attr('height', (d) => chartHeight - marginY - yScale(d.value))
+      .attr('height', (d) => height - marginY - yScale(d.value))
       .attr('x', (d) => xScale(d.label))
-      .attr('y', (d) => yScale(d.value))
-      .attr('fill', () => randomColor());
-  }, [chartWidth, chartHeight]);
+      .attr('y', (d) => yScale(d.value));
+  }, [chartData, height, marginY, xScale, yScale]);
 
   return (
     <ChartContext.Provider
       value={{
         chartData,
-        chartWidth,
-        chartHeight,
-        xScale: xScaleRef.current,
-        yScale: yScaleRef.current,
+        chartWidth: width,
+        chartHeight: height,
+        xScale,
+        yScale,
         marginX,
         marginY,
       }}
     >
-      <div className="chart">
-        <svg width="500" height="400" ref={svgRef}>
+      <div className="chart" ref={chartWrapperRef}>
+        <svg width="100%" height="100%" ref={svgRef}>
           {children}
+          {chartData.map((d, i) => (
+            <rect key={i} className="bar" fill={d.color} />
+          ))}
         </svg>
       </div>
     </ChartContext.Provider>

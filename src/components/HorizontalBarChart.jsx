@@ -31,7 +31,7 @@ function HorizontalBarChart({
     const calcYDomain = () => {
       return [
         d3.max(dataset, function (d) {
-          return d;
+          return d.value;
         }),
         0,
       ];
@@ -43,7 +43,8 @@ function HorizontalBarChart({
         .map((value, i) => {
           return {
             label: labels[i],
-            value: dataset[i],
+            value: dataset[i].value,
+            color: dataset[i].color,
           };
         });
     };
@@ -104,7 +105,7 @@ function HorizontalBarChart({
       .attr('width', (d) => yScale(d.value))
       .attr('x', () => marginLeft)
       .attr('y', (d) => xScale(d.label) + marginBottom)
-      .attr('fill', () => randomColor());
+      .attr('fill', (d) => d.color);
 
     mountedRef.current = true;
   }, []);

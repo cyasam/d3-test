@@ -2,10 +2,36 @@ import { useState } from 'react';
 import './App.css';
 import HorizontalBarChart from './components/HorizontalBarChart';
 import VerticalBarChart from './components/vertical-bar-chart';
+import { randomColor } from './utils';
 
 const generateDataset = () => ({
   labels: [2016, 2017, 2018, 2019, 2020, 2021],
-  data: [214549, 210771, 212538, 209857, 178545, 185217],
+  data: [
+    {
+      value: 214549,
+      color: randomColor(),
+    },
+    {
+      value: 210771,
+      color: randomColor(),
+    },
+    {
+      value: 212538,
+      color: randomColor(),
+    },
+    {
+      value: 209857,
+      color: randomColor(),
+    },
+    {
+      value: 178545,
+      color: randomColor(),
+    },
+    {
+      value: 185217,
+      color: randomColor(),
+    },
+  ],
 });
 
 function App() {
