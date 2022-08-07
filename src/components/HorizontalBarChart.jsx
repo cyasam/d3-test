@@ -2,7 +2,13 @@ import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { randomColor } from '../utils';
 
-function HorizontalBarChart({ dataset, marginLeft = 30, marginBottom = 30 }) {
+function HorizontalBarChart({
+  labels,
+  dataset,
+  axisXPosition = 'bottom',
+  marginLeft = 30,
+  marginBottom = 30,
+}) {
   const svgRef = useRef();
   const mountedRef = useRef();
 
@@ -19,16 +25,44 @@ function HorizontalBarChart({ dataset, marginLeft = 30, marginBottom = 30 }) {
     const svgHeight = svgRef.current.clientHeight;
 
     const calcXDomain = () => {
-      return dataset.map((data) => data.year).reverse();
+      return labels;
     };
 
     const calcYDomain = () => {
       return [
         d3.max(dataset, function (d) {
-          return d.value;
+          return d;
         }),
         0,
       ];
+    };
+
+    const handleData = () => {
+      return Array(dataset.length)
+        .fill(0)
+        .map((value, i) => {
+          return {
+            label: labels[i],
+            value: dataset[i],
+          };
+        });
+    };
+
+    const renderAxisBottom = () => {
+      g(svgElement)
+        .classed('x-axis', true)
+        .attr(
+          'transform',
+          `translate(${marginLeft}, ${svgHeight - marginBottom})`
+        )
+        .call(d3.axisBottom(yScale));
+    };
+
+    const renderAxisTop = () => {
+      g(svgElement)
+        .classed('x-axis', true)
+        .attr('transform', `translate(${marginLeft},  ${marginBottom})`)
+        .call(d3.axisTop(yScale));
     };
 
     xScaleRef.current = d3
@@ -46,17 +80,14 @@ function HorizontalBarChart({ dataset, marginLeft = 30, marginBottom = 30 }) {
     const xScale = yScaleRef.current;
     const yScale = xScaleRef.current;
 
-    g(svgElement)
-      .classed('x-axis', true)
-      .attr(
-        'transform',
-        `translate(${marginLeft}, ${svgHeight - marginBottom})`
-      )
-      .call(d3.axisBottom(yScale));
-    g(svgElement)
-      .classed('x-axis', true)
-      .attr('transform', `translate(${marginLeft},  ${marginBottom})`)
-      .call(d3.axisTop(yScale));
+    if (axisXPosition === 'both') {
+      renderAxisTop();
+      renderAxisBottom();
+    } else if (axisXPosition === 'top') {
+      renderAxisTop();
+    } else {
+      renderAxisBottom();
+    }
 
     g(svgElement)
       .classed('y-axis', true)
@@ -65,14 +96,14 @@ function HorizontalBarChart({ dataset, marginLeft = 30, marginBottom = 30 }) {
 
     svgElement
       .selectAll('rect')
-      .data(dataset)
+      .data(handleData())
       .enter()
       .append('rect')
       .classed('bar', true)
       .attr('height', xScale.bandwidth())
       .attr('width', (d) => yScale(d.value))
-      .attr('x', (d) => marginLeft)
-      .attr('y', (d) => xScale(d.year) + marginBottom)
+      .attr('x', () => marginLeft)
+      .attr('y', (d) => xScale(d.label) + marginBottom)
       .attr('fill', () => randomColor());
 
     mountedRef.current = true;
