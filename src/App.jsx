@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './App.css';
-import HorizontalBarChart from './components/HorizontalBarChart';
+import HorizontalBarChart from './components/horizontal-bar-chart';
 import VerticalBarChart from './components/vertical-bar-chart';
 import { randomColor } from './utils';
 
@@ -46,7 +46,13 @@ function App() {
         dataset={dataset.data}
         marginX={50}
       />
-      <HorizontalBarChart labels={dataset.labels} dataset={dataset.data} />
+      <HorizontalBarChart
+        axisXPosition="both"
+        axisYPosition="both"
+        labels={dataset.labels}
+        dataset={dataset.data}
+        marginX={50}
+      />
     </div>
   );
 }

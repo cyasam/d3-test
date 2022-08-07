@@ -2,16 +2,20 @@ import React, { useContext, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { ChartContext } from './Chart';
 
-const renderAxisYLeft = ({ element, marginX }) => {
-  return element.attr('transform', `translate(${marginX}, 0)`);
+const renderAxisYLeft = ({ element, marginX, marginY }) => {
+  return element.attr('transform', `translate(${marginX}, ${marginY})`);
 };
 
-const renderAxisYRight = ({ element, chartWidth, marginX }) => {
-  return element.attr('transform', `translate(${chartWidth - marginX}, 0)`);
+const renderAxisYRight = ({ element, chartWidth, marginX, marginY }) => {
+  return element.attr(
+    'transform',
+    `translate(${chartWidth - marginX}, ${marginY})`
+  );
 };
 
 function YAxis({ axisYPosition }) {
-  const { yScale, chartWidth, chartHeight, marginX } = useContext(ChartContext);
+  const { yScale, chartWidth, chartHeight, marginX, marginY } =
+    useContext(ChartContext);
 
   const yAxisRef = useRef();
   const yAxisElement = d3.select(yAxisRef.current);
@@ -23,23 +27,27 @@ function YAxis({ axisYPosition }) {
       renderAxisYLeft({
         element: yAxisElement.select('.left'),
         marginX,
+        marginY,
       }).call(d3.axisLeft(yScale));
 
       renderAxisYRight({
         element: yAxisElement.select('.right'),
         chartWidth,
         marginX,
+        marginY,
       }).call(d3.axisRight(yScale));
     } else if (axisYPosition === 'right') {
       renderAxisYRight({
         element: yAxisElement.select('.right'),
         chartWidth,
         marginX,
+        marginY,
       }).call(d3.axisRight(yScale));
     } else {
       renderAxisYLeft({
         element: yAxisElement.select('.left'),
         marginX,
+        marginY,
       }).call(d3.axisLeft(yScale));
     }
   }, [chartWidth, chartHeight, yScale]);

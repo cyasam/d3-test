@@ -9,10 +9,10 @@ const initChart = ({ dataset, labels }) => {
 
   const calcYDomain = () => {
     return [
-      0,
       d3.max(dataset, function (d) {
         return d.value;
       }),
+      0,
     ];
   };
 
@@ -45,16 +45,16 @@ const Chart = ({ labels, dataset, marginX, marginY, children }) => {
 
   const { xScale, yScale } = useMemo(() => {
     const xScale = d3
-      .scaleBand()
-      .range([marginX, width - marginX])
-      .paddingInner(0.2)
-      .paddingOuter(0.3)
-      .domain(domainX);
+      .scaleLinear()
+      .range([width - marginX * 2, 0])
+      .domain(domainY);
 
     const yScale = d3
-      .scaleLinear()
-      .range([height - marginY, marginY + 20, marginY])
-      .domain(domainY);
+      .scaleBand()
+      .range([0, height - marginY * 2])
+      .domain(domainX)
+      .paddingInner(0.2)
+      .paddingOuter(0.5);
 
     return {
       xScale,
@@ -69,11 +69,11 @@ const Chart = ({ labels, dataset, marginX, marginY, children }) => {
       .select(svgRef.current)
       .selectAll('.bar')
       .data(chartData)
-      .attr('width', xScale.bandwidth())
-      .attr('height', (d) => height - marginY - yScale(d.value))
-      .attr('x', (d) => xScale(d.label))
-      .attr('y', (d) => yScale(d.value));
-  }, [chartData, height, marginY, xScale, yScale]);
+      .attr('height', yScale.bandwidth())
+      .attr('width', (d) => xScale(d.value))
+      .attr('x', () => marginX)
+      .attr('y', (d) => yScale(d.label) + marginY);
+  }, [chartData, marginX, marginY, xScale, yScale]);
 
   return (
     <ChartContext.Provider
