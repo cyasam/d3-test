@@ -1,3 +1,7 @@
+h1 {
+  text-align: center;
+}
+
 .charts .chart {
   width: 100%;
   height: 100%;
@@ -28,10 +32,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    min-height: 100vh;
   }
   .chart-container {
     padding: 30px;
     height: 30vw;
   }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
 }
