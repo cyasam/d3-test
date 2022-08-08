@@ -38,7 +38,7 @@ const initChart = ({ dataset, labels }) => {
 
 export const ChartContext = createContext();
 
-const Chart = ({ labels, dataset, marginX, marginY, children }) => {
+const Chart = ({ labels, dataset, marginX, marginY, lineColor, children }) => {
   const [chartWrapperRef, { width, height }] = useMeasure();
   const { domainX, domainY, chartData } = initChart({ labels, dataset });
 
@@ -69,7 +69,7 @@ const Chart = ({ labels, dataset, marginX, marginY, children }) => {
       .select('.line')
       .datum(chartData)
       .attr('fill', 'none')
-      .attr('stroke', 'steelblue')
+      .attr('stroke', lineColor)
       .attr('stroke-width', 1.5)
       .attr(
         'd',

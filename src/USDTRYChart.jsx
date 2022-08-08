@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Watch } from 'react-loader-spinner';
 import LineChart from './components/line-chart';
 
 const generateDataset = (data) => ({
@@ -10,6 +11,7 @@ const generateDataset = (data) => ({
 function USDTRYChart() {
   const [loading, setLoading] = useState(false);
   const [dataset, setDataset] = useState();
+  const color = '#FF5733';
 
   useEffect(() => {
     const fetchExchangeRate = async () => {
@@ -38,7 +40,7 @@ function USDTRYChart() {
   if (loading)
     return (
       <div className="loading">
-        <p>Graph Loading...</p>
+        <Watch color={color} />
       </div>
     );
 
@@ -47,7 +49,12 @@ function USDTRYChart() {
   return (
     <div className="charts">
       <div className="line chart-container">
-        <LineChart labels={dataset.labels} dataset={dataset.data} />
+        <LineChart
+          lineColor={color}
+          axisYPosition="both"
+          labels={dataset.labels}
+          dataset={dataset.data}
+        />
       </div>
     </div>
   );
