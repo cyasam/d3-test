@@ -11,7 +11,9 @@ const generateDataset = (data) => ({
 function USDTRYChart() {
   const [loading, setLoading] = useState(false);
   const [dataset, setDataset] = useState();
-  const color = '#FF5733';
+  const rgbValues = '74, 217, 78';
+  const lineColor = `rgb(${rgbValues})`;
+  const areaColor = `rgba(${rgbValues}, 0.2)`;
 
   useEffect(() => {
     const fetchExchangeRate = async () => {
@@ -40,7 +42,7 @@ function USDTRYChart() {
   if (loading)
     return (
       <div className="loading">
-        <Watch color={color} />
+        <Watch color={lineColor} />
       </div>
     );
 
@@ -50,7 +52,8 @@ function USDTRYChart() {
     <div className="charts">
       <div className="line chart-container">
         <LineChart
-          lineColor={color}
+          lineColor={lineColor}
+          areaColor={areaColor}
           axisYPosition="both"
           labels={dataset.labels}
           dataset={dataset.data}

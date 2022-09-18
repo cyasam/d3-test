@@ -11,6 +11,7 @@ function LineChart({
   marginX = 30,
   marginY = 30,
   lineColor,
+  areaColor,
 }) {
   return (
     <Chart
@@ -19,6 +20,7 @@ function LineChart({
       marginX={marginX}
       marginY={marginY}
       lineColor={lineColor}
+      areaColor={areaColor}
     >
       <XAxis axisXPosition={axisXPosition} />
       <YAxis axisYPosition={axisYPosition} />

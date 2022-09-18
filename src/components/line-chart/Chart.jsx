@@ -38,7 +38,15 @@ const initChart = ({ dataset, labels }) => {
 
 export const ChartContext = createContext();
 
-const Chart = ({ labels, dataset, marginX, marginY, lineColor, children }) => {
+const Chart = ({
+  labels,
+  dataset,
+  marginX,
+  marginY,
+  lineColor,
+  areaColor,
+  children,
+}) => {
   const [chartWrapperRef, { width, height }] = useMeasure();
   const { domainX, domainY, chartData } = initChart({ labels, dataset });
 
@@ -70,7 +78,7 @@ const Chart = ({ labels, dataset, marginX, marginY, lineColor, children }) => {
       .datum(chartData)
       .attr('fill', 'none')
       .attr('stroke', lineColor)
-      .attr('stroke-width', 1.5)
+      .attr('stroke-width', 2)
       .attr(
         'd',
         d3
@@ -82,6 +90,24 @@ const Chart = ({ labels, dataset, marginX, marginY, lineColor, children }) => {
             return yScale(d.value);
           })
       );
+
+    const I = d3.range(labels.length);
+    const defined = (_, i) =>
+      !isNaN(new Date(labels[i]).getTime()) && !isNaN(dataset[i]);
+    const D = d3.map(chartData, defined);
+
+    const area = d3
+      .area()
+      .defined((_, i) => D[i])
+      .curve(d3.curveLinear)
+      .x((i) => xScale(new Date(labels[i])))
+      .y0(yScale(0))
+      .y1((i) => yScale(dataset[i]));
+
+    d3.select(svgRef.current)
+      .select('.area')
+      .attr('fill', areaColor)
+      .attr('d', area(I));
   }, [chartData, height, marginY, xScale, yScale]);
 
   return (
@@ -100,6 +126,7 @@ const Chart = ({ labels, dataset, marginX, marginY, lineColor, children }) => {
         <svg width="100%" height="100%" ref={svgRef}>
           {children}
           <path className="line" />
+          <path className="area" />
         </svg>
       </div>
     </ChartContext.Provider>
